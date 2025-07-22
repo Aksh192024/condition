@@ -84,7 +84,6 @@ jobs:
 
   deploy:
     needs: [test, build]
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/resuable.yml
    
     
