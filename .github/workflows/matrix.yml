@@ -34,17 +34,13 @@ jobs:
         run: npm run lint -- --debug
 
       - name: Run tests
-        continue-on-error: true
-        id: test-working
         run: npm run test
   
-      - name: test output
-        if: failure() && steps.test-working.outcome == 'failure'
-        #run: echo "Testing failed."
-        uses: actions/upload-artifact@v4 ## uploading artifacts ##
-        with:
-          name: test results  
-          path: test-results.json ## path to test results file ##
+  #    - name: test output
+  #     uses: actions/upload-artifact@v4 ## uploading artifacts ##
+   #     with:
+   #       name: test results  
+   #       path: test-results.json ## path to test results file ##
   build:
 
    runs-on: ubuntu-latest
