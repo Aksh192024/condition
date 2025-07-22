@@ -38,7 +38,11 @@ jobs:
   
       - name: test output
         if: failure() ${{ steps.test-working.outcome == 'failure' }}
-        run: echo "Test completed successfully."
+        #run: echo "Testing failed."
+        run: artifacts/upload-artifact@v4 ## uploading artifacts ##
+        with:
+          name: test results  
+          path: test-results.json ## path to test results file ##
   build:
 
    runs-on: ubuntu-latest
