@@ -1,4 +1,4 @@
-name: error.yml
+name: matrix
 on:
   push:
     branches:
@@ -12,11 +12,9 @@ jobs:
    strategy:
      matrix:
        node-version: [18, 20] # Define the Node.js versions to test against
-
-   runs-on: ubuntu-latest
+       operating-system: [ubuntu-latest, windows-latest] # Define the operating systems to test against
+   runs-on: ${{ matrix.operating-system }} # Use the matrix operating system
    needs: test
-   outputs:
-     script: ${{ steps.publish-js.outputs.publishing}} #getting the output from publish-js step
 
    steps:
      - name: Checkout code ## fecting the code ##
