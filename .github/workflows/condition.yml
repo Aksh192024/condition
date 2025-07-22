@@ -33,8 +33,12 @@ jobs:
         run: npm run lint -- --debug
 
       - name: Run tests
-        run: echo "Running tests..."
+        id: test working
+        run: npm run test
   
+      - name: test output
+        if: failure() ${{ steps.test-working.outcome == 'failure' }}
+        run: echo "Test completed successfully."
   build:
 
    runs-on: ubuntu-latest
