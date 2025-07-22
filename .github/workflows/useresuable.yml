@@ -83,7 +83,7 @@ jobs:
        run: find dist/assets/*.js -type f  -exec echo 'publishing={}' >> $GITHUB_OUTPUT \; ## publishing js files ##
 
   deploy:
-
+    needs: [test, build]
     runs-on: ubuntu-latest
     uses: ./.github/workflows/resuable.yml
    
