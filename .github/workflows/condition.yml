@@ -33,7 +33,7 @@ jobs:
         run: npm run lint -- --debug
 
       - name: Run tests
-        id: test working
+        id: test-working
         run: npm run test
   
       - name: test output
