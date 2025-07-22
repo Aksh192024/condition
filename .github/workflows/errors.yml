@@ -1,0 +1,119 @@
+name: condition.yml
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main  
+  workflow_dispatch:  
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: cache node modules ## cache node modules ##
+        uses: actions/cache@v4
+        with: 
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+     
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter (with debug)
+        run: npm run lint -- --debug
+
+      - name: Run tests
+        id: test-working
+        run: npm run test
+  
+      - name: test output
+        if: failure() && steps.test-working.outcome == 'failure'
+        #run: echo "Testing failed."
+        uses: actions/upload-artifact@v4 ## uploading artifacts ##
+        with:
+          name: test results  
+          path: test-results.json ## path to test results file ##
+  build:
+
+   runs-on: ubuntu-latest
+   needs: test
+   outputs:
+     script: ${{ steps.publish-js.outputs.publishing}} #getting the output from publish-js step
+
+   steps:
+     - name: Checkout code ## fecting the code ##
+       uses: actions/checkout@v3
+
+     - name: cache node modules ## cache node modules ##
+       uses: actions/cache@v4
+       with: 
+        path: ~/.npm
+        key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+          
+
+     - name: Set up Node.js
+       uses: actions/setup-node@v3
+       with:
+        node-version: '18'  
+
+     - name: artifacts
+       uses: actions/upload-artifact@v4 ## uploading artifacts ##
+       with:
+         name: dist files
+         path: dist
+     
+     - name: Install dependencies
+       run: npm ci
+
+     - name: Deploy application
+       run: npm run build
+
+     - name: publish js files
+       id: publish-js
+       run: find dist/assets/*.js -type f  -exec echo 'publishing={}' >> $GITHUB_OUTPUT \; ## publishing js files ##
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: cache node modules  ## cache node modules ##
+        uses: actions/cache@v4
+        with: 
+         path: ~/.npm
+         key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4  ## downloading artifacts ##
+        with:
+          name: dist files
+
+      - name: dist files
+        run: ls ## listing artifacts ##
+
+      - name: script output
+        run: echo " ${{needs.build.outputs.script}} " ## getting the output from build step ##
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy application
+        run: echo "Deploying application..."
