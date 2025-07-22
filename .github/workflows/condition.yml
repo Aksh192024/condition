@@ -37,7 +37,7 @@ jobs:
         run: npm run test
   
       - name: test output
-        if: failure() ${{ steps.test-working.outcome == 'failure' }}
+        if: failure() && steps.test-working.outcome == 'failure'
         #run: echo "Testing failed."
         uses: actions/upload-artifact@v4 ## uploading artifacts ##
         with:
