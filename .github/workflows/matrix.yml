@@ -14,8 +14,6 @@ jobs:
         node-version: [18, 20] # Define the Node.js versions to test against
         operating-system: [ubuntu-latest, windows-latest] # Define the operating systems to test against
     runs-on: ${{ matrix.operating-system }} # Use the matrix operating system
-    needs: test
-
     steps:
       - name: Checkout code ## fecting the code ##
         uses: actions/checkout@v3
